@@ -1,12 +1,11 @@
 import React, { useState, useEffect } from 'react';
 import { Moon, Sun } from 'lucide-react';
 import { DashboardData, TimePeriod } from '@/types';
-import { mockDataService, mockActivitySummaryAccount1, mockActivitySummaryAccount2 } from '@/services/mockData';
+import { mockDataService } from '@/services/mockData';
 import Header from '@/components/Header';
 import Overview from '@/components/sections/Overview';
 import GrowthAnalytics from '@/components/sections/GrowthAnalytics';
 import ActivityStreak from '@/components/sections/ActivityStreak';
-import ProjectedGrowth from '@/components/sections/ProjectedGrowth';
 import './App.css';
 
 const App: React.FC = () => {
@@ -14,9 +13,6 @@ const App: React.FC = () => {
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('1m');
-  const [instagramView, setInstagramView] = useState<'account1' | 'account2' | 'combined'>(
-    'combined'
-  );
 
   useEffect(() => {
     const loadData = async () => {
@@ -76,40 +72,33 @@ const App: React.FC = () => {
         {/* Main Content */}
         <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
           {/* Overview Section */}
-          <Overview
-            dashboardData={dashboardData}
-            instagramView={instagramView}
-            setInstagramView={setInstagramView}
-          />
+          <Overview dashboardData={dashboardData} />
 
-          {/* Time Period Selector */}
-          <div className="mt-8 gap-2 inline-flex bg-gray-100 dark:bg-dark-800 rounded-lg p-1">
-            {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
-              <button
-                key={period}
-                onClick={() => setSelectedTimePeriod(period)}
-                className={`px-4 py-2 rounded font-medium transition-all ${
-                  selectedTimePeriod === period
-                    ? 'bg-white dark:bg-dark-700 text-blue-600 dark:text-blue-400 shadow-sm'
-                    : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                }`}
-              >
-                {period === '7d' ? '7D' : period === '1m' ? '1M' : period === '3m' ? '3M' : '6M'}
-              </button>
-            ))}
+          {/* Activity & Streaks Section */}
+          <ActivityStreak dashboardData={dashboardData} />
+
+          {/* Growth Analytics with Time Period Selector */}
+          <div className="mt-8">
+            <div className="flex items-center justify-between mb-6">
+              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Growth Charts</h2>
+              <div className="inline-flex gap-2 bg-gray-100 dark:bg-dark-800 rounded-lg p-1">
+                {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
+                  <button
+                    key={period}
+                    onClick={() => setSelectedTimePeriod(period)}
+                    className={`px-3 py-1 text-sm rounded font-medium transition-all ${
+                      selectedTimePeriod === period
+                        ? 'bg-blue-600 text-white'
+                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                    }`}
+                  >
+                    {period === '7d' ? '7D' : period === '1m' ? '30D' : period === '3m' ? '3M' : '6M'}
+                  </button>
+                ))}
+              </div>
+            </div>
+            <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} />
           </div>
-
-          {/* Growth Analytics Section */}
-          <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} />
-
-          {/* Activity Streak Section */}
-          <ActivityStreak 
-            activitySummary={instagramView === 'account2' ? mockActivitySummaryAccount2 : mockActivitySummaryAccount1}
-            currentAccount={instagramView === 'account2' ? 'account2' : 'account1'}
-          />
-
-          {/* Projected Growth Section */}
-          <ProjectedGrowth dashboardData={dashboardData} />
         </main>
 
         {/* Footer */}
