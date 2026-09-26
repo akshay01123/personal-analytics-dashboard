@@ -12,6 +12,7 @@ const App: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
+  const [selectedAccount, setSelectedAccount] = useState<'akshay' | 'japaneasy101'>('akshay');
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('1m');
 
   useEffect(() => {
@@ -70,23 +71,47 @@ const App: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+        <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
+          {/* Account Selector */}
+          <div className="flex gap-2 mb-4">
+            <button
+              onClick={() => setSelectedAccount('akshay')}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                selectedAccount === 'akshay'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 dark:bg-dark-800 text-gray-900 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-700'
+              }`}
+            >
+              👤 Akshay
+            </button>
+            <button
+              onClick={() => setSelectedAccount('japaneasy101')}
+              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
+                selectedAccount === 'japaneasy101'
+                  ? 'bg-blue-600 text-white'
+                  : 'bg-gray-200 dark:bg-dark-800 text-gray-900 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-700'
+              }`}
+            >
+              🏢 Japaneasy101
+            </button>
+          </div>
+
           {/* Overview Section */}
-          <Overview dashboardData={dashboardData} />
+          <Overview dashboardData={dashboardData} account={selectedAccount} />
 
           {/* Activity & Streaks Section */}
-          <ActivityStreak dashboardData={dashboardData} />
+          <ActivityStreak dashboardData={dashboardData} account={selectedAccount} />
 
-          {/* Growth Analytics with Time Period Selector */}
-          <div className="mt-8">
-            <div className="flex items-center justify-between mb-6">
-              <h2 className="text-xl font-bold text-gray-900 dark:text-white">Growth Charts</h2>
-              <div className="inline-flex gap-2 bg-gray-100 dark:bg-dark-800 rounded-lg p-1">
+          {/* Growth Charts with Time Period Selector */}
+          <div className="mt-4">
+            <div className="flex items-center justify-between mb-3">
+              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Growth</h3>
+              <div className="inline-flex gap-1 bg-gray-100 dark:bg-dark-800 rounded-lg p-0.5">
                 {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
                   <button
                     key={period}
                     onClick={() => setSelectedTimePeriod(period)}
-                    className={`px-3 py-1 text-sm rounded font-medium transition-all ${
+                    className={`px-2 py-1 text-xs rounded font-medium transition-all ${
                       selectedTimePeriod === period
                         ? 'bg-blue-600 text-white'
                         : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
@@ -97,7 +122,7 @@ const App: React.FC = () => {
                 ))}
               </div>
             </div>
-            <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} />
+            <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} account={selectedAccount} />
           </div>
         </main>
 

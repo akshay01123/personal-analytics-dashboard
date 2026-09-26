@@ -17,9 +17,10 @@ import { formatNumber } from '@/utils/formatting';
 interface GrowthAnalyticsProps {
   timePeriod: TimePeriod;
   dashboardData: DashboardData;
+  account: 'akshay' | 'japaneasy101';
 }
 
-const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod }) => {
+const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod, dashboardData: _, account }) => {
   const [growthDataMap, setGrowthDataMap] = useState<Record<string, GrowthData>>({});
   const [loading, setLoading] = useState(false);
 
@@ -90,21 +91,21 @@ const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod }) => {
     const projectedData = addProjections(data.data, data.endValue);
 
     return (
-      <div className="card p-4">
-        <div className="flex items-center gap-2 mb-4">
+      <div className="card p-2">
+        <div className="flex items-center gap-1 mb-1">
           <div className="text-blue-600 dark:text-blue-400">{icon}</div>
-          <div>
-            <h4 className="text-sm font-semibold text-gray-900 dark:text-white">{title}</h4>
-            <p className="text-xs text-gray-500 dark:text-gray-400">
+          <div className="flex-1 min-w-0">
+            <h4 className="text-xs font-semibold text-gray-900 dark:text-white truncate">{title}</h4>
+            <p className="text-xs text-gray-500 dark:text-gray-400 truncate">
               {formatNumber(data.startValue)} → {formatNumber(data.endValue)}
             </p>
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={200}>
+        <ResponsiveContainer width="100%" height={120}>
           <ComposedChart data={projectedData}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
-            <XAxis dataKey="date" tick={{ fontSize: 10 }} />
-            <YAxis tick={{ fontSize: 10 }} />
+            <XAxis dataKey="date" tick={{ fontSize: 8 }} />
+            <YAxis tick={{ fontSize: 8 }} />
             <Tooltip formatter={(value: any) => formatNumber(value)} />
             {/* Actual data */}
             <Area
@@ -141,33 +142,35 @@ const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod }) => {
   }
 
   const platformIcons: Record<string, React.ReactNode> = {
-    instagram: <Instagram size={20} />,
-    linkedin: <Linkedin size={20} />,
-    youtube: <Youtube size={20} />,
-    github: <Github size={20} />,
+    instagram: <Instagram size={14} />,
+    linkedin: <Linkedin size={14} />,
+    youtube: <Youtube size={14} />,
+    github: <Github size={14} />,
   };
 
   const platformTitles: Record<string, string> = {
-    instagram: 'Instagram Followers',
-    linkedin: 'LinkedIn Connections',
-    youtube: 'YouTube Subscribers',
-    github: 'GitHub Followers',
+    instagram: 'Instagram',
+    linkedin: 'LinkedIn',
+    youtube: 'YouTube',
+    github: 'GitHub',
   };
 
+  const platformsToShow =
+    account === 'akshay'
+      ? ['instagram', 'linkedin', 'youtube', 'github']
+      : ['instagram', 'linkedin'];
+
   return (
-    <div className="mt-8">
-      <h2 className="text-xl font-bold text-gray-900 dark:text-white mb-6">Growth Analytics</h2>
-      <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-        {['instagram', 'linkedin', 'youtube', 'github'].map((platform) => (
-          <ChartCard
-            key={platform}
-            title={platformTitles[platform]}
-            icon={platformIcons[platform]}
-            data={growthDataMap[platform] || { data: [], startValue: 0, endValue: 0 }}
-            platform={platform}
-          />
-        ))}
-      </div>
+    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+      {platformsToShow.map((platform) => (
+        <ChartCard
+          key={platform}
+          title={platformTitles[platform]}
+          icon={platformIcons[platform]}
+          data={growthDataMap[platform] || { data: [], startValue: 0, endValue: 0 }}
+          platform={platform}
+        />
+      ))}
     </div>
   );
 };
