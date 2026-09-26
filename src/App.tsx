@@ -12,7 +12,7 @@ const App: React.FC = () => {
   const [dashboardData, setDashboardData] = useState<DashboardData | null>(null);
   const [loading, setLoading] = useState(true);
   const [darkMode, setDarkMode] = useState(false);
-  const [selectedAccount, setSelectedAccount] = useState<'akshay' | 'japaneasy101'>('akshay');
+  const [selectedView, setSelectedView] = useState<'overview' | 'akshay' | 'japaneasy101'>('overview');
   const [selectedTimePeriod, setSelectedTimePeriod] = useState<TimePeriod>('1m');
 
   useEffect(() => {
@@ -71,59 +71,118 @@ const App: React.FC = () => {
         </header>
 
         {/* Main Content */}
-        <main className="max-w-4xl mx-auto px-4 sm:px-6 py-4">
-          {/* Account Selector */}
-          <div className="flex gap-2 mb-4">
-            <button
-              onClick={() => setSelectedAccount('akshay')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                selectedAccount === 'akshay'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-dark-800 text-gray-900 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-700'
-              }`}
-            >
-              👤 Akshay
-            </button>
-            <button
-              onClick={() => setSelectedAccount('japaneasy101')}
-              className={`px-4 py-2 rounded-lg font-semibold text-sm transition-all ${
-                selectedAccount === 'japaneasy101'
-                  ? 'bg-blue-600 text-white'
-                  : 'bg-gray-200 dark:bg-dark-800 text-gray-900 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-dark-700'
-              }`}
-            >
-              🏢 Japaneasy101
-            </button>
+        <main className="max-w-5xl mx-auto px-4 sm:px-6 py-4">
+          {/* View Selector Tabs */}
+          <div className="flex gap-2 mb-4 border-b border-gray-300 dark:border-dark-700">
+            {(['overview', 'akshay', 'japaneasy101'] as const).map((view) => (
+              <button
+                key={view}
+                onClick={() => setSelectedView(view)}
+                className={`px-4 py-2 font-semibold text-sm transition-all border-b-2 ${
+                  selectedView === view
+                    ? 'border-blue-600 text-blue-600 dark:text-blue-400'
+                    : 'border-transparent text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                }`}
+              >
+                {view === 'overview' ? 'Overview' : view === 'akshay' ? '👤 Akshay' : '🏢 Japaneasy101'}
+              </button>
+            ))}
           </div>
 
-          {/* Overview Section */}
-          <Overview dashboardData={dashboardData} account={selectedAccount} />
+          {/* Overview Tab */}
+          {selectedView === 'overview' && (
+            <div>
+              <Overview dashboardData={dashboardData} account={null} />
 
-          {/* Activity & Streaks Section */}
-          <ActivityStreak dashboardData={dashboardData} account={selectedAccount} />
-
-          {/* Growth Charts with Time Period Selector */}
-          <div className="mt-4">
-            <div className="flex items-center justify-between mb-3">
-              <h3 className="text-sm font-bold text-gray-900 dark:text-white">Growth</h3>
-              <div className="inline-flex gap-1 bg-gray-100 dark:bg-dark-800 rounded-lg p-0.5">
-                {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
-                  <button
-                    key={period}
-                    onClick={() => setSelectedTimePeriod(period)}
-                    className={`px-2 py-1 text-xs rounded font-medium transition-all ${
-                      selectedTimePeriod === period
-                        ? 'bg-blue-600 text-white'
-                        : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
-                    }`}
-                  >
-                    {period === '7d' ? '7D' : period === '1m' ? '30D' : period === '3m' ? '3M' : '6M'}
-                  </button>
-                ))}
+              {/* Graphs in single row */}
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase">Growth Charts</h3>
+                  <div className="inline-flex gap-1 bg-gray-100 dark:bg-dark-800 rounded-lg p-0.5">
+                    {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
+                      <button
+                        key={period}
+                        onClick={() => setSelectedTimePeriod(period)}
+                        className={`px-1.5 py-0.5 text-xs rounded font-medium transition-all ${
+                          selectedTimePeriod === period
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        {period === '7d' ? '7D' : period === '1m' ? '30D' : period === '3m' ? '3M' : '6M'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} account={null} />
               </div>
+
+              {/* Streaks */}
+              <ActivityStreak dashboardData={dashboardData} account={null} />
             </div>
-            <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} account={selectedAccount} />
-          </div>
+          )}
+
+          {/* Akshay Tab */}
+          {selectedView === 'akshay' && (
+            <div>
+              <Overview dashboardData={dashboardData} account="akshay" />
+
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase">Growth Charts</h3>
+                  <div className="inline-flex gap-1 bg-gray-100 dark:bg-dark-800 rounded-lg p-0.5">
+                    {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
+                      <button
+                        key={period}
+                        onClick={() => setSelectedTimePeriod(period)}
+                        className={`px-1.5 py-0.5 text-xs rounded font-medium transition-all ${
+                          selectedTimePeriod === period
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        {period === '7d' ? '7D' : period === '1m' ? '30D' : period === '3m' ? '3M' : '6M'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} account="akshay" />
+              </div>
+
+              <ActivityStreak dashboardData={dashboardData} account="akshay" />
+            </div>
+          )}
+
+          {/* Japaneasy101 Tab */}
+          {selectedView === 'japaneasy101' && (
+            <div>
+              <Overview dashboardData={dashboardData} account="japaneasy101" />
+
+              <div className="mt-3">
+                <div className="flex items-center justify-between mb-2">
+                  <h3 className="text-xs font-bold text-gray-900 dark:text-white uppercase">Growth Charts</h3>
+                  <div className="inline-flex gap-1 bg-gray-100 dark:bg-dark-800 rounded-lg p-0.5">
+                    {(['7d', '1m', '3m', '6m'] as TimePeriod[]).map((period) => (
+                      <button
+                        key={period}
+                        onClick={() => setSelectedTimePeriod(period)}
+                        className={`px-1.5 py-0.5 text-xs rounded font-medium transition-all ${
+                          selectedTimePeriod === period
+                            ? 'bg-blue-600 text-white'
+                            : 'text-gray-600 dark:text-gray-400 hover:text-gray-900 dark:hover:text-gray-200'
+                        }`}
+                      >
+                        {period === '7d' ? '7D' : period === '1m' ? '30D' : period === '3m' ? '3M' : '6M'}
+                      </button>
+                    ))}
+                  </div>
+                </div>
+                <GrowthAnalytics timePeriod={selectedTimePeriod} dashboardData={dashboardData} account="japaneasy101" />
+              </div>
+
+              <ActivityStreak dashboardData={dashboardData} account="japaneasy101" />
+            </div>
+          )}
         </main>
 
         {/* Footer */}

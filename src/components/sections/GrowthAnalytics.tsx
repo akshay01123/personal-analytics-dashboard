@@ -17,7 +17,7 @@ import { formatNumber } from '@/utils/formatting';
 interface GrowthAnalyticsProps {
   timePeriod: TimePeriod;
   dashboardData: DashboardData;
-  account: 'akshay' | 'japaneasy101';
+  account: 'akshay' | 'japaneasy101' | null;
 }
 
 const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod, dashboardData: _, account }) => {
@@ -101,7 +101,7 @@ const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod, dashboard
             </p>
           </div>
         </div>
-        <ResponsiveContainer width="100%" height={120}>
+        <ResponsiveContainer width="100%" height={150}>
           <ComposedChart data={projectedData}>
             <CartesianGrid strokeDasharray="3 3" stroke="rgba(0,0,0,0.1)" />
             <XAxis dataKey="date" tick={{ fontSize: 8 }} />
@@ -156,12 +156,12 @@ const GrowthAnalytics: React.FC<GrowthAnalyticsProps> = ({ timePeriod, dashboard
   };
 
   const platformsToShow =
-    account === 'akshay'
-      ? ['instagram', 'linkedin', 'youtube', 'github']
-      : ['instagram', 'linkedin'];
+    account === 'japaneasy101'
+      ? ['instagram', 'linkedin']
+      : ['instagram', 'linkedin', 'youtube', 'github'];
 
   return (
-    <div className="grid grid-cols-1 md:grid-cols-2 gap-2">
+    <div className={`grid gap-2 ${account === 'japaneasy101' ? 'grid-cols-2' : 'grid-cols-2 sm:grid-cols-4'}`}>
       {platformsToShow.map((platform) => (
         <ChartCard
           key={platform}
